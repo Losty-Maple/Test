@@ -1,0 +1,76 @@
+import tkinter as tk
+from tkinter import messagebox
+
+# Quiz-Fragen und Antworten
+quiz = [
+    {
+        "frage": "Was ist die Hauptstadt von Deutschland?",
+        "optionen": ["Berlin", "München", "Hamburg", "Köln"],
+        "antwort": "Berlin"
+    },
+    {
+        "frage": "Wie viele Planeten gibt es im Sonnensystem?",
+        "optionen": ["7", "8", "9", "10"],
+        "antwort": "8"
+    },
+    {
+        "frage": "Wer hat die Relativitätstheorie formuliert?",
+        "optionen": ["Isaac Newton", "Nikola Tesla", "Albert Einstein", "Stephen Hawking"],
+        "antwort": "Albert Einstein"
+    }
+]
+
+# Klasse für das Quiz
+class QuizApp:
+    def __init__(self, root):
+        self.root = root
+        self.root.title("Quiz")
+        self.punkte = 0
+        self.frage_nummer = 0
+
+        self.frage_label = tk.Label(root, text="", wraplength=400, font=("Arial", 14))
+        self.frage_label.pack(pady=20)
+
+        self.var = tk.StringVar()
+        self.optionen_buttons = []
+        for _ in range(4):
+            button = tk.Radiobutton(root, text="", variable=self.var, value="", font=("Arial", 12))
+            button.pack(anchor=tk.W, padx=20)
+            self.optionen_buttons.append(button)
+
+        self.submit_button = tk.Button(root, text="Submit", command=self.check_antwort, font=("Arial", 12))
+        self.submit_button.pack(pady=20)
+
+        self.zeige_frage()
+
+    def zeige_frage(self):
+        aktuelle_frage = quiz[self.frage_nummer]
+        self.frage_label.config(text=aktuelle_frage["frage"])
+        self.var.set(None)
+        for i, option in enumerate(aktuelle_frage["optionen"]):
+            self.optionen_buttons[i].config(text=option, value=option)
+
+    def check_antwort(self):
+        if self.var.get() == "":
+            messagebox.showwarning("Warnung", "Bitte eine Antwort auswählen.")
+            return
+
+        aktuelle_frage = quiz[self.frage_nummer]
+        if self.var.get() == aktuelle_frage["antwort"]:
+            self.punkte += 1
+
+        self.frage_nummer += 1
+        if self.frage_nummer < len(quiz):
+            self.zeige_frage()
+        else:
+            self.zeige_ergebnis()
+
+    def zeige_ergebnis(self):
+        messagebox.showinfo("Ergebnis", f"Du hast {self.punkte} von {len(quiz)} Punkten erreicht!")
+        self.root.destroy()
+
+# Hauptanwendung
+if __name__ == "__main__":
+    root = tk.Tk()
+    app = QuizApp(root)
+    root.mainloop()
